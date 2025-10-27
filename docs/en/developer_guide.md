@@ -5,23 +5,17 @@
 ### Prerequisites
 
 - Go 1.23.6+
-- Docker and Docker Compose (optional)
+- Docker
 
 ### Getting Started
 
-```bash
-# Clone the repository
-git clone https://github.com/aigw-project/metadata-center.git
-cd metadata-center
+Start the local service using the default configuration file `configs/config.toml`:
 
-# Install dependencies
-go mod download
+1. Listens on local port `8080` for API services
+2. Listens on local port `8081` for PProf performance analysis
 
-# Build the project
-go build -o metadata-center ./cmd/main.go
-
-# Run tests
-go test -v ./...
+```shell
+make run-local
 ```
 
 ## Project Structure

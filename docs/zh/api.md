@@ -1,14 +1,10 @@
 # Metadata-center API 文档
 
-## 概述
-
-Metadata-center API 提供模型负载统计功能，包括查询、设置和删除推理请求负载信息。系统跟踪并记录每个模型引擎的负载状态，包括排队请求数量和prompt长度。
-
 ## API 列表
 
-### 1. 查询推理请求负载信息
+### 1. 查询指定服务负载信息
 
-**URL**: `/v1/load/stats`  
+**URL**: `/v1/load/stats`
 **方法**: `GET`
 
 **查询参数**:
@@ -33,7 +29,7 @@ Metadata-center API 提供模型负载统计功能，包括查询、设置和删
 }
 ```
 
-### 2. 添加推理请求负载信息
+### 2. 添加推理请求负载
 
 **URL**: `/v1/load/stats`  
 **方法**: `POST`
@@ -66,7 +62,7 @@ Metadata-center API 提供模型负载统计功能，包括查询、设置和删
 }
 ```
 
-### 3. 删除推理请求负载信息
+### 3. 删除推理请求负载
 
 **URL**: `/v1/load/stats`  
 **方法**: `DELETE`
@@ -74,20 +70,14 @@ Metadata-center API 提供模型负载统计功能，包括查询、设置和删
 **请求体**:
 ```json
 {
-  "cluster": "string",
-  "request_id": "string",
-  "prompt_length": 0,
-  "ip": "string"
+  "request_id": "string"
 }
 ```
 
 **请求参数**:
 | 参数名       | 类型    | 是否必需 | 描述                   |
 |--------------|---------|----------|------------------------|
-| cluster      | string  | 是       | 集群名称               |
 | request_id   | string  | 是       | 请求ID                 |
-| prompt_length| integer | 否       | 提示词长度（默认 0）   |
-| ip           | string  | 是       | IPv4 地址              |
 
 **响应格式**:
 ```json
@@ -107,20 +97,14 @@ Metadata-center API 提供模型负载统计功能，包括查询、设置和删
 **请求体**:
 ```json
 {
-  "cluster": "string",
-  "request_id": "string",
-  "prompt_length": 0,
-  "ip": "string"
+  "request_id": "string"
 }
 ```
 
 **请求参数**:
 | 参数名       | 类型    | 是否必需 | 描述                   |
 |--------------|---------|----------|------------------------|
-| cluster      | string  | 是       | 集群名称               |
 | request_id   | string  | 是       | 请求ID                 |
-| prompt_length| integer | 否       | 提示词长度（默认 0）   |
-| ip           | string  | 是       | IPv4 地址              |
 
 **响应格式**:
 ```json
@@ -188,12 +172,13 @@ Metadata-center API 提供模型负载统计功能，包括查询、设置和删
 
 ## 使用示例
 
-### 查询推理请求负载统计
+### 查询指定服务负载信息
+
 ```bash
 curl -X GET "http://localhost:80/v1/load/stats?cluster=mycluster"
 ```
 
-### 添加推理请求负载统计
+### 添加推理请求负载
 ```bash
 curl -X POST "http://localhost:80/v1/load/stats" \
   -H "Content-Type: application/json" \
@@ -205,7 +190,8 @@ curl -X POST "http://localhost:80/v1/load/stats" \
   }'
 ```
 
-### 删除推理请求负载统计
+### 删除推理请求负载
+
 ```bash
 curl -X DELETE "http://localhost:80/v1/load/stats" \
   -H "Content-Type: application/json" \
@@ -216,7 +202,8 @@ curl -X DELETE "http://localhost:80/v1/load/stats" \
   }'
 ```
 
-### 删除推理请求提示词长度统计
+### 删除推理请求提示词长度
+
 ```bash
 curl -X DELETE "http://localhost:80/v1/load/prompt" \
   -H "Content-Type: application/json" \
@@ -228,6 +215,7 @@ curl -X DELETE "http://localhost:80/v1/load/prompt" \
 ```
 
 ### 修改日志级别
+
 ```bash
 curl -X POST "http://localhost:80/log/level" \
   -H "Content-Type: application/json" \
@@ -235,18 +223,3 @@ curl -X POST "http://localhost:80/log/level" \
     "LevelParam": "DEBUG"
   }'
 ```
-
-## 内部处理机制
-
-### 数据结构
-1. `LoadStats`: 记录所有负载信息
-2. `ModelStats`: 记录单个模型的负载信息
-3. `EngineStats`: 记录特定引擎的负载信息
-
-### 垃圾回收
-- 定期清理过期的请求数据
-- 默认过期时间：10 分钟
-
-### 数据同步
-- 支持多副本部署
-- 通过 replicator 模块支持不同副本间的数据同步

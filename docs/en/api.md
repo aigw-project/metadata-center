@@ -1,12 +1,8 @@
 # Metadata-center API Documentation
 
-## Overview
-
-Metadata-center API provides model load statistics functionality, including querying, setting, and deleting inference request load information. The system tracks and records the load status of each model engine, including queued request counts and prompt lengths.
-
 ## API List
 
-### 1. Query Inference Request Load Information
+### 1. Query Cluster Level Inference Load
 
 **URL**: `/v1/load/stats`  
 **Method**: `GET`
@@ -33,7 +29,7 @@ Metadata-center API provides model load statistics functionality, including quer
 }
 ```
 
-### 2. Add Inference Request Load Information
+### 2. Add Inference Request Load
 
 **URL**: `/v1/load/stats`  
 **Method**: `POST`
@@ -66,7 +62,7 @@ Metadata-center API provides model load statistics functionality, including quer
 }
 ```
 
-### 3. Delete Inference Request Load Information
+### 3. Delete Inference Request Load
 
 **URL**: `/v1/load/stats`  
 **Method**: `DELETE`
@@ -74,20 +70,14 @@ Metadata-center API provides model load statistics functionality, including quer
 **Request Body**:
 ```json
 {
-  "cluster": "string",
-  "request_id": "string",
-  "prompt_length": 0,
-  "ip": "string"
+  "request_id": "string"
 }
 ```
 
 **Request Parameters**:
 | Parameter     | Type    | Required | Description               |
 |---------------|---------|----------|---------------------------|
-| cluster       | string  | Yes      | Cluster name              |
 | request_id    | string  | Yes      | Request ID                |
-| prompt_length | integer | No       | Prompt length (default 0) |
-| ip            | string  | Yes      | IPv4 address              |
 
 **Response Format**:
 ```json
@@ -107,20 +97,14 @@ Metadata-center API provides model load statistics functionality, including quer
 **Request Body**:
 ```json
 {
-  "cluster": "string",
-  "request_id": "string",
-  "prompt_length": 0,
-  "ip": "string"
+  "request_id": "string"
 }
 ```
 
 **Request Parameters**:
 | Parameter     | Type    | Required | Description               |
 |---------------|---------|----------|---------------------------|
-| cluster       | string  | Yes      | Cluster name              |
 | request_id    | string  | Yes      | Request ID                |
-| prompt_length | integer | No       | Prompt length (default 0) |
-| ip            | string  | Yes      | IPv4 address              |
 
 **Response Format**:
 ```json
@@ -188,12 +172,13 @@ Exposes system metrics for Prometheus monitoring, including:
 
 ## Usage Examples
 
-### Query Inference Request Load Statistics
+### Query Cluster Level Inference Load
+
 ```bash
 curl -X GET "http://localhost:80/v1/load/stats?cluster=mycluster"
 ```
 
-### Add Inference Request Load Statistics
+### Add Inference Request Load
 ```bash
 curl -X POST "http://localhost:80/v1/load/stats" \
   -H "Content-Type: application/json" \
@@ -205,7 +190,7 @@ curl -X POST "http://localhost:80/v1/load/stats" \
   }'
 ```
 
-### Delete Inference Request Load Statistics
+### Delete Inference Request Load
 ```bash
 curl -X DELETE "http://localhost:80/v1/load/stats" \
   -H "Content-Type: application/json" \
@@ -216,7 +201,7 @@ curl -X DELETE "http://localhost:80/v1/load/stats" \
   }'
 ```
 
-### Delete Inference Request Prompt Length Statistics
+### Delete Inference Request Prompt Length
 ```bash
 curl -X DELETE "http://localhost:80/v1/load/prompt" \
   -H "Content-Type: application/json" \
@@ -235,18 +220,3 @@ curl -X POST "http://localhost:80/log/level" \
     "LevelParam": "DEBUG"
   }'
 ```
-
-## Internal Processing Mechanism
-
-### Data Structures
-1. `LoadStats`: Records all load information
-2. `ModelStats`: Records load information for a single model
-3. `EngineStats`: Records load information for a specific engine
-
-### Garbage Collection
-- Periodically cleans up expired request data
-- Default expiration time: 10 minutes
-
-### Data Synchronization
-- Supports multi-replica deployment
-- Supports data synchronization between different replicas through replicator module

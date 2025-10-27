@@ -1,92 +1,60 @@
 # Metadata Center
 
-<h3 align="center">A Distributed Metadata Management System for Load-Aware AI Inference</h3>
+A near real-time load metric collection component, designed for intelligent inference scheduler in large-scale inference services.
 
-<p align="center">
-  <a href="#-quick-start">Quick Start</a> •
-  <a href="#-features">Features</a> •
-  <a href="#-documentation">Documentation</a> •
-  <a href="#-contributing">Contributing</a>
-</p>
+English | [中文](README_ZH.md)
 
-## 🤔 Why Metadata Center?
+## Status
 
-Managing the state of multiple service instances in a distributed AI inference environment is challenging. You need to answer questions like:
+Early & quick developing
 
--   How to get real-time load information of each AI inference service instance?
--   How to automatically discover and connect to all healthy Metadata Center instances in the cluster?
--   When a Metadata Center instance receives a load update, how to synchronize this information to all other Metadata Center instances?
+## Background
 
-**Metadata Center** is designed to solve these problems. It's a lightweight, high-performance Go service that provides unified metadata management, service discovery, and data synchronization capabilities for your AI inference cluster.
+Load metrics is very import for LLM inference scheduler.
 
-## ✨ Core Features
+Typically, the following four load metrics are very important: (for each engine level)
 
--   📊 **Real-time Load Statistics**: Track and query model inference requests, processing queue lengths, and resource utilization in real-time.
--   🌐 **Automatic Service Discovery**: Automatically discover and manage service instance clusters based on DNS, eliminating manual node list configuration.
--   🔄 **Multi-instance Data Synchronization**: Achieve high-availability data synchronization across instances through the built-in Replicator, ensuring eventual consistency of metadata.
--   📈 **Prometheus Metrics**: Natively expose Prometheus-compatible `/metrics` endpoint for easy integration with your existing monitoring system.
--   🚀 **High Performance**: Built with Go and Gin framework, providing low-latency API responses and high-concurrency processing capabilities.
--   🔧 **Dynamic Configuration**: Support dynamic log level adjustment via API for convenient online debugging.
+1. Total number of requests
+2. Token usage (KVCache usage)
+3. Number of requests in Prefill
+4. Prompt length in Prefill
 
-## 🚀 Quick Start
+Timeliness is critical in large scale service.
+Poor timeliness will lead to large races, may choosing the same inference engine before the load metrics are updated.
 
-Get started with Metadata Center in minutes:
+There will be a fixed periodic delay, when polling metrics from engines.
+Especially in large-scale scenarios, as the QPS (throughput) increases, the race will also increase significantly.
 
-```bash
-# Clone the repository
-git clone https://github.com/aigw-project/metadata-center.git
-cd metadata-center
+## Architecture
 
-# Build Docker image
-docker build -t metadata-center .
+[![Architecture](docs/images/architecture.png)](docs/images/architecture.png)
 
-# Start the service
-docker run -d -p 8080:8080 -p 8081:8081 -e POD_IP=127.0.0.1 metadata-center
+1. Request proxy to Inference Engine:
 
-# Verify the service
-curl -X POST "http://localhost:8080/v1/load/stats" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "cluster": "mycluster",
-    "request_id": "req123",
-    "prompt_length": 512,
-    "ip": "192.168.1.1"
-  }'
-```
+    a. prefill & total request number: +1
+
+    b. prefill prompt length: +prompt-length
+
+2. First token responded
+
+   a. prefill request number: -1
+
+   b. prefill prompt length: -prompt-length
+
+3. Request Done
+
+   a. total request number: -1
+
+This can achieve near realtime performance.
+
+Even more, we can introduce CAS API for adding, when it is required in the feature.
 
 ## 📚 Documentation
 
-### For Users
-- [User Guide](docs/en/guide.md) - Complete user guide with setup, configuration, and usage
-- [API Documentation](docs/en/api.md) - Complete API reference and examples
-
-### For Developers
-- [Developer Guide](docs/developer/guide.md) - Development setup, project structure, and contributing
-
-### Project Planning
-- [Roadmap](docs/en/ROADMAP.md) - Future development plans and feature roadmap
-
-## 📖 API Reference
-
-Metadata Center provides RESTful APIs for managing inference request load information:
-
-- **POST** `/v1/load/stats` - Record inference request
-- **GET** `/v1/load/stats` - Query load statistics  
-- **DELETE** `/v1/load/stats` - Remove inference request
-- **DELETE** `/v1/load/prompt` - Delete inference request prompt length
-- **POST** `/log/level` - Dynamic log level adjustment
-- **GET** `/metrics` - Prometheus metrics endpoint
-
-For complete API documentation with examples, see [API Documentation](docs/en/api.md).
-
-## 🤝 Contributing
-
-We welcome all forms of contributions! If you have any ideas, suggestions, or find bugs, please feel free to submit [Issues](https://github.com/aigw-project/metadata-center/issues).
-
-If you want to contribute code, please create a Pull Request following standard Git workflow practices.
-
-We recommend creating an Issue first to discuss the changes you want to make.
+- [Developer Guide](docs/en/developer_guide.md)
+- [API Documentation](docs/en/api.md)
+- [Roadmap](docs/en/ROADMAP.md)
 
 ## 📜 License
 
-This project is licensed under the [Apache 2.0](LICENSE) License.
+This project is licensed under [Apache 2.0](LICENSE).

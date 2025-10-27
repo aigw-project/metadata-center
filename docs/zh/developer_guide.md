@@ -5,23 +5,17 @@
 ### 前置要求
 
 - Go 1.23.6+
-- Docker 和 Docker Compose (可选)
+- Docker
 
 ### 开始使用
 
+启动本地服务，默认使用 `configs/config.toml` 配置文件：
+
+1. 监听本地 `8080` 端口提供 API 服务
+2. 监听本地 `8081` 端口提供 PProf 性能分析
+
 ```bash
-# 克隆仓库
-git clone https://github.com/aigw-project/metadata-center.git
-cd metadata-center
-
-# 安装依赖
-go mod download
-
-# 构建项目
-go build -o metadata-center ./cmd/main.go
-
-# 运行测试
-go test -v ./...
+make run-local
 ```
 
 ## 项目结构
