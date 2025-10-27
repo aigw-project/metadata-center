@@ -13,8 +13,8 @@
 # limitations under the License.
 
 # Single stage build for simplicity
-ARG DOCKER_MIRROR
-FROM ${DOCKER_MIRROR}golang:1.23-alpine
+ARG BUILD_IMAGE=golang:1.23-alpine
+FROM ${BUILD_IMAGE}
 
 WORKDIR /app
 
@@ -36,3 +36,4 @@ EXPOSE 8080 8081
 
 # Run the application
 CMD ["./metadata-center", "run", "--config", "configs/config.toml"]
+

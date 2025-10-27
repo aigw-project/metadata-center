@@ -89,27 +89,11 @@ clean:
 	rm -f $(BINARY_NAME)
 	rm -f coverage.out
 
-.PHONY: docker-build
-docker-build:
+.PHONY: build-image
+build-image:
 	@echo "Building Docker image..."
-	@docker build --build-arg DOCKER_MIRROR=$(DOCKER_MIRROR) -t $(DOCKER_IMAGE):latest .
+	@docker build --build-arg BUILD_IMAGE=$(BUILD_IMAGE) -t $(DOCKER_IMAGE):latest .
 
-.PHONY: docker-run
-docker-run: docker-build
+.PHONY: run-docker
+run-docker: docker-build
 	docker run --rm -p 8080:8080 -p 8081:8081 -e POD_IP=127.0.0.1 $(DOCKER_IMAGE):latest
-
-.PHONY: help
-help:
-	@echo "Available targets:"
-	@echo "  build-local     - Build the binary locally"
-	@echo "  build          - Build the binary using Docker"
-	@echo "  run-local      - Build and run locally with default config"
-	@echo "  unit-test-local - Run unit tests locally"
-	@echo "  unit-test      - Run unit tests using Docker"
-	@echo "  lint-go        - Run Go linter"
-	@echo "  lint-license   - Check license headers"
-	@echo "  fix-license    - Fix license headers"
-	@echo "  clean          - Clean build artifacts"
-	@echo "  docker-build   - Build Docker image"
-	@echo "  docker-run     - Run Docker container"
-	@echo "  help           - Show this help message"
