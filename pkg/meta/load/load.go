@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 package load
 
 import (
@@ -34,6 +33,12 @@ type InferenceRequest struct {
 	Ip           string    `json:"ip" binding:"required,ipv4" form:"ip"`
 	TimeStamp    int64     `json:"timestamp,omitempty" form:"timestamp"`
 	CreateTime   time.Time `json:"-"`
+}
+
+// DeletionInferenceRequest represents an inference request for deletion
+type DeletionInferenceRequest struct {
+	RequestId string `json:"request_id" binding:"required" form:"request_id"`
+	TimeStamp int64  `json:"timestamp,omitempty" form:"timestamp"`
 }
 
 var loadStats *LoadStats
@@ -76,11 +81,11 @@ func Set(req *InferenceRequest) {
 }
 
 // Delete removes an inference request from load statistics
-func Delete(req *InferenceRequest) {
+func Delete(req *DeletionInferenceRequest) {
 	loadStats.DeleteRequest(req)
 }
 
 // PromptDelete removes prompt length from statistics
-func PromptDelete(req *InferenceRequest) {
+func PromptDelete(req *DeletionInferenceRequest) {
 	loadStats.DeletePromptLength(req)
 }

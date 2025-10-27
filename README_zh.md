@@ -57,14 +57,14 @@ curl -X POST "http://localhost:8080/v1/load/stats" \
 ## 📚 文档 (Documentation)
 
 ### 用户文档
-- [用户指南](docs/user/guide_zh.md) - 完整的用户指南，包含设置、配置和使用
-- [API 文档](docs/api_zh.md) - 完整的API参考和示例
+- [用户指南](docs/zh/guide_zh.md) - 完整的用户指南，包含设置、配置和使用
+- [API 文档](docs/zh/api_zh.md) - 完整的API参考和示例
 
 ### 开发者文档
 - [开发者指南](docs/developer/guide_zh.md) - 开发设置、项目结构和贡献指南
 
 ### 项目规划
-- [路线图](docs/ROADMAP_zh.md) - 未来开发计划和功能路线图
+- [路线图](docs/zh/ROADMAP_zh.md) - 未来开发计划和功能路线图
 
 ## 📖 API 参考 (API Reference)
 
@@ -77,7 +77,7 @@ curl -X POST "http://localhost:8080/v1/load/stats" \
 - **POST** `/log/level` - 动态日志级别调整
 - **GET** `/metrics` - Prometheus指标端点
 
-完整的API文档和示例请参阅[API文档](docs/api_zh.md)。
+完整的API文档和示例请参阅[API文档](docs/zh/api_zh.md)。
 
 ## 🤝 贡献 (Contributing)
 

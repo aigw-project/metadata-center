@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 package api
 
 import (
@@ -62,7 +61,7 @@ func (a *LoadAPI) Set(c *gin.Context) {
 
 // Delete handles DELETE requests for removing load statistics
 func (a *LoadAPI) Delete(c *gin.Context) {
-	var reqParam load.InferenceRequest
+	var reqParam load.DeletionInferenceRequest
 	if err := ginx.ParseJSON(c, &reqParam); err != nil {
 		logger.Errorf("load api: delete request error: %v", err)
 		ginx.ResError(c, err)
@@ -78,7 +77,7 @@ func (a *LoadAPI) Delete(c *gin.Context) {
 
 // DeletePrompt handles DELETE requests for removing prompt length statistics
 func (a *LoadAPI) DeletePrompt(c *gin.Context) {
-	var reqParam load.InferenceRequest
+	var reqParam load.DeletionInferenceRequest
 	if err := ginx.ParseJSON(c, &reqParam); err != nil {
 		logger.Errorf("load api: delete request prompt length error: %v", err)
 		ginx.ResError(c, err)

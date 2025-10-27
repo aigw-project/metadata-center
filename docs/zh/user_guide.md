@@ -108,4 +108,4 @@ curl http://localhost:8080/metrics
 
 ## API 参考
 
-查看 [API 文档](../api.md) 获取完整的 API 参考和示例。
+查看 [API 文档](../en/api.md) 获取完整的 API 参考和示例。

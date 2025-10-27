@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 package load
 
 import (
@@ -52,7 +51,7 @@ func HandleLoadSet(payload json.RawMessage) error {
 
 // HandleLoadDelete processes load statistics delete messages
 func HandleLoadDelete(payload json.RawMessage) error {
-	var req InferenceRequest
+	var req DeletionInferenceRequest
 	if err := json.Unmarshal(payload, &req); err != nil {
 		return fmt.Errorf("failed to unmarshal payload for handleLoadDelete: %w", err)
 	}
@@ -63,7 +62,7 @@ func HandleLoadDelete(payload json.RawMessage) error {
 
 // HandleLoadPromptDelete processes prompt statistics delete messages
 func HandleLoadPromptDelete(payload json.RawMessage) error {
-	var req InferenceRequest
+	var req DeletionInferenceRequest
 	if err := json.Unmarshal(payload, &req); err != nil {
 		return fmt.Errorf("failed to unmarshal payload for handleLoadPromptDelete: %w", err)
 	}

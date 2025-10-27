@@ -108,4 +108,4 @@ curl http://localhost:8080/metrics
 
 ## API Reference
 
-See [API Documentation](../api.md) for complete API reference with examples.
+See [API Documentation](api.md) for complete API reference with examples.

@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 package load
 
 import (
@@ -73,7 +72,7 @@ func (ls *LoadStats) AddRequest(req *InferenceRequest) {
 }
 
 // DeleteRequest removes an inference request from load statistics
-func (ls *LoadStats) DeleteRequest(req *InferenceRequest) {
+func (ls *LoadStats) DeleteRequest(req *DeletionInferenceRequest) {
 	requestID := req.RequestId
 	prom.SetReplicationLatencyMillisecond(req.TimeStamp, requestID)
 	// Do delete first, skip delay if successful
@@ -126,7 +125,7 @@ func (ls *LoadStats) decEngineStats(req *InferenceRequest) {
 }
 
 // DeletePromptLength removes prompt length from statistics
-func (ls *LoadStats) DeletePromptLength(req *InferenceRequest) {
+func (ls *LoadStats) DeletePromptLength(req *DeletionInferenceRequest) {
 	requestID := req.RequestId
 	prom.SetReplicationLatencyMillisecond(req.TimeStamp, requestID)
 	// Do delete first, skip delay if successful

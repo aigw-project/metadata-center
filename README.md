@@ -57,14 +57,14 @@ curl -X POST "http://localhost:8080/v1/load/stats" \
 ## 📚 Documentation
 
 ### For Users
-- [User Guide](docs/user/guide.md) - Complete user guide with setup, configuration, and usage
-- [API Documentation](docs/api.md) - Complete API reference and examples
+- [User Guide](docs/en/guide.md) - Complete user guide with setup, configuration, and usage
+- [API Documentation](docs/en/api.md) - Complete API reference and examples
 
 ### For Developers
 - [Developer Guide](docs/developer/guide.md) - Development setup, project structure, and contributing
 
 ### Project Planning
-- [Roadmap](docs/ROADMAP.md) - Future development plans and feature roadmap
+- [Roadmap](docs/en/ROADMAP.md) - Future development plans and feature roadmap
 
 ## 📖 API Reference
 
@@ -77,7 +77,7 @@ Metadata Center provides RESTful APIs for managing inference request load inform
 - **POST** `/log/level` - Dynamic log level adjustment
 - **GET** `/metrics` - Prometheus metrics endpoint
 
-For complete API documentation with examples, see [API Documentation](docs/api.md).
+For complete API documentation with examples, see [API Documentation](docs/en/api.md).
 
 ## 🤝 Contributing
 

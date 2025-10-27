@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 package load
 
 import (
@@ -39,12 +38,19 @@ func newInferenceRequest(id, backend, modelName, ip, cluster string, length int3
 	}
 }
 
+func newDeletionInferenceRequest(id string) *DeletionInferenceRequest {
+	return &DeletionInferenceRequest{
+		RequestId: id,
+	}
+}
+
 func TestNewLoadStats(t *testing.T) {
 	logger.SetLevel(logger.DebugLevel)
 	ls := NewLoadStats()
 	tests := []struct {
 		name            string
 		req             *InferenceRequest
+		deletionReq     *DeletionInferenceRequest
 		add             bool
 		totalEnginesLen int32
 		curQueueLen     int32
@@ -77,6 +83,7 @@ func TestNewLoadStats(t *testing.T) {
 		{
 			name:            "delete req",
 			req:             newInferenceRequest("1", "sglang", "deepseekr1", "192.168.1.1", "test_domain", 0),
+			deletionReq:     newDeletionInferenceRequest("1"),
 			add:             false,
 			totalEnginesLen: 1,
 			curQueueLen:     1,
@@ -85,6 +92,7 @@ func TestNewLoadStats(t *testing.T) {
 		{
 			name:            "delete id not exists",
 			req:             newInferenceRequest("noID", "sglang", "deepseekr1", "192.168.1.1", "test_domain", 512),
+			deletionReq:     newDeletionInferenceRequest("noID"),
 			add:             false,
 			totalEnginesLen: 1,
 			curQueueLen:     1,
@@ -93,12 +101,14 @@ func TestNewLoadStats(t *testing.T) {
 		{
 			name:            "domain not exists",
 			req:             newInferenceRequest("2", "sglang", "qwen", "192.168.1.1", "test_domain_not_exists", 512),
+			deletionReq:     newDeletionInferenceRequest("2"),
 			add:             false,
 			totalEnginesLen: -1,
 		},
 		{
 			name:            "engine not exists",
 			req:             newInferenceRequest("2", "sglang", "deepseekr1", "192.168.1.2", "test_domain", 512),
+			deletionReq:     newDeletionInferenceRequest("2"),
 			add:             false,
 			totalEnginesLen: 1,
 			curQueueLen:     -1,
@@ -125,8 +135,8 @@ func TestNewLoadStats(t *testing.T) {
 		if tc.add {
 			ls.AddRequest(tc.req)
 		} else {
-			ls.DeletePromptLength(tc.req)
-			ls.DeleteRequest(tc.req)
+			ls.DeletePromptLength(tc.deletionReq)
+			ls.DeleteRequest(tc.deletionReq)
 		}
 
 		ms := ls.GetModelStats(tc.req.Cluster)
@@ -402,21 +412,20 @@ func TestDeleteNonExistentRequest(t *testing.T) {
 	logger.SetLevel(logger.DebugLevel)
 	ls := NewLoadStats()
 
-	req := &InferenceRequest{
-		Cluster:      "test_domain",
-		RequestId:    "non-existent-id",
-		PromptLength: 512,
-		Ip:           "192.168.1.1",
+	cluster := "test_domain"
+
+	req := &DeletionInferenceRequest{
+		RequestId: "non-existent-id",
 	}
 
 	ls.DeleteRequest(req)
 
-	ms := ls.GetModelStats(req.Cluster)
+	ms := ls.GetModelStats(cluster)
 	assert.Nil(t, ms)
 
 	time.Sleep(1100 * time.Millisecond)
 
-	ms = ls.GetModelStats(req.Cluster)
+	ms = ls.GetModelStats(cluster)
 	assert.Nil(t, ms)
 }
 
@@ -424,21 +433,20 @@ func TestDeleteNonExistentPromptLength(t *testing.T) {
 	logger.SetLevel(logger.DebugLevel)
 	ls := NewLoadStats()
 
-	req := &InferenceRequest{
-		Cluster:      "test_domain",
-		RequestId:    "non-existent-id",
-		PromptLength: 512,
-		Ip:           "192.168.1.1",
+	cluster := "test_domain"
+
+	req := &DeletionInferenceRequest{
+		RequestId: "non-existent-id",
 	}
 
 	ls.DeletePromptLength(req)
 
-	ms := ls.GetModelStats(req.Cluster)
+	ms := ls.GetModelStats(cluster)
 	assert.Nil(t, ms)
 
 	time.Sleep(1100 * time.Millisecond)
 
-	ms = ls.GetModelStats(req.Cluster)
+	ms = ls.GetModelStats(cluster)
 	assert.Nil(t, ms)
 }
 
@@ -453,7 +461,11 @@ func TestDelayDeleteWithLateAdd(t *testing.T) {
 		Ip:           "192.168.1.1",
 	}
 
-	ls.DeleteRequest(req)
+	deletionReq := &DeletionInferenceRequest{
+		RequestId: req.RequestId,
+	}
+
+	ls.DeleteRequest(deletionReq)
 
 	time.Sleep(500 * time.Millisecond)
 	ls.AddRequest(req)
@@ -507,12 +519,8 @@ func TestConcurrencyUpdateLoadAndPromptLength(t *testing.T) {
 			defer wg.Done()
 			time.Sleep(time.Duration(rand.Intn(50)) * time.Millisecond)
 
-			req := &InferenceRequest{
-				RequestId:    id,
-				Cluster:      "test_domain",
-				PromptLength: 512,
-				Ip:           "192.168.100.1",
-				CreateTime:   time.Now(),
+			req := &DeletionInferenceRequest{
+				RequestId: id,
 			}
 			ls.DeletePromptLength(req)
 		}(reqID)
@@ -522,13 +530,7 @@ func TestConcurrencyUpdateLoadAndPromptLength(t *testing.T) {
 			defer wg.Done()
 			time.Sleep(time.Duration(rand.Intn(50)) * time.Millisecond)
 
-			req := &InferenceRequest{
-				RequestId:    id,
-				Cluster:      "test_domain",
-				PromptLength: 512,
-				Ip:           "192.168.100.1",
-				CreateTime:   time.Now(),
-			}
+			req := newDeletionInferenceRequest(id)
 			ls.DeleteRequest(req)
 		}(reqID)
 	}
