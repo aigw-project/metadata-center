@@ -29,23 +29,25 @@
 
 [![Architecture](docs/images/architecture.png)](docs/images/architecture.png)
 
+与推理网关（如 [AIGW](https://github.com/aigw-project/aigw)）协同工作，以下步骤实现准实时的负载指标统计：
+
 1. 请求代理到推理引擎：
 
-   a. 预填充和总请求数量：+1
+   a. 预填充和总请求数量：`+1`
 
-   b. 预填充提示长度：+prompt-length
+   b. 预填充提示长度：`+prompt-length`
 
 2. 第一个标记响应
 
-   a. 预填充请求数量：-1
+   a. 预填充请求数量：`-1`
 
-   b. 预填充提示长度：-prompt-length
+   b. 预填充提示长度：`-prompt-length`
 
 3. 请求完成
 
-   a. 总请求数量：-1
+   a. 总请求数量：`-1`
 
-这样就可以实现接近实时的负载指标统计，未来有必要的话，也可以引入 CAS 语义的 API。
+未来有必要的时候，也可以引入 CAS 语义的 API 来降低更大并发场景下的冲突。
 
 ## 📚 文档 (Documentation)
 

@@ -29,25 +29,25 @@ Especially in large-scale scenarios, as the QPS (throughput) increases, the race
 
 [![Architecture](docs/images/architecture.png)](docs/images/architecture.png)
 
+Cooperating with Inference Gateway(i.e. [AIGW](https://github.com/aigw-project/aigw)), we can achieve near real-time load metric collection by the following steps:
+
 1. Request proxy to Inference Engine:
 
-    a. prefill & total request number: +1
+    a. prefill & total request number: `+1`
 
-    b. prefill prompt length: +prompt-length
+    b. prefill prompt length: `+prompt-length`
 
 2. First token responded
 
-   a. prefill request number: -1
+   a. prefill request number: `-1`
 
-   b. prefill prompt length: -prompt-length
+   b. prefill prompt length: `-prompt-length`
 
-3. Request Done
+3. Request done
 
-   a. total request number: -1
+   a. total request number: `-1`
 
-This can achieve near realtime performance.
-
-Even more, we can introduce CAS API for adding, when it is required in the feature.
+Even more, we can introduce CAS API to reduce race, when it is required in the feature.
 
 ## 📚 Documentation
 
