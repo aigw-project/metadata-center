@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 package servicediscovery
 
 import (
@@ -28,19 +27,19 @@ import (
 
 // DNSConfig contains configuration parameters for DNS-based service discovery.
 type DNSConfig struct {
-	Domain         string              // Domain name to perform DNS lookups on
-	LookupInterval time.Duration       // Interval between DNS lookups
+	Domain         string                  // Domain name to perform DNS lookups on
+	LookupInterval time.Duration           // Interval between DNS lookups
 	GetLocalHosts  types.GetLocalHostsFunc // Function to get local host addresses for exclusion
 }
 
 // dnsServiceDiscovery implements DNS-based service discovery.
 // It periodically performs DNS lookups to discover service instances.
 type dnsServiceDiscovery struct {
-	config    DNSConfig          // Configuration parameters
-	mutex     sync.RWMutex       // Protects concurrent access to nodeList and hosts
+	config    DNSConfig           // Configuration parameters
+	mutex     sync.RWMutex        // Protects concurrent access to nodeList and hosts
 	nodeList  map[string]struct{} // Set of discovered host IP addresses
-	hosts     []string           // List of discovered hosts (excluding local host)
-	localHost string             // Local host address to exclude from results
+	hosts     []string            // List of discovered hosts (excluding local host)
+	localHost string              // Local host address to exclude from results
 }
 
 // NewDNSDiscovery creates a new DNS-based service discovery instance.
