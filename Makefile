@@ -65,12 +65,12 @@ unit-test:
 		$(BUILD_IMAGE) \
 		make unit-test-local
 
-GOLANGCI_LINT_VERSION = 1.62.2
 .PHONY: fmt-go
 fmt-go:
 	@echo "Formatting Go code..."
 	@go fmt $(GO_MODULES)
 
+GOLANGCI_LINT_VERSION = 1.62.2
 .PHONY: lint-go
 lint-go:
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v$(GOLANGCI_LINT_VERSION); \
