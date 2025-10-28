@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 package main
 
 import (
@@ -71,6 +70,7 @@ func start(configFile string) error {
 	gin.SetMode(gin.ReleaseMode)
 	config.InitEnv()
 
+	logger.Infof("starting metadata center on %s:%d", config.C.HTTP.Host, config.C.HTTP.Port)
 	srv := server.NewServer()
 	srv.Init()
 
