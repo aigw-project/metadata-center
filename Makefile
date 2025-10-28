@@ -65,6 +65,11 @@ unit-test:
 		$(BUILD_IMAGE) \
 		make unit-test-local
 
+.PHONY: fmt-go
+fmt-go:
+	@echo "Formatting Go code..."
+	@go fmt $(GO_MODULES)
+
 GOLANGCI_LINT_VERSION = 1.62.2
 .PHONY: lint-go
 lint-go:
