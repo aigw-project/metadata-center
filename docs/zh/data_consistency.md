@@ -2,7 +2,14 @@
 
 ## 概述
 
-元数据中心实现了垃圾回收（GC）机制来维护数据一致性并防止内存泄漏。该机制自动清理过期的元数据条目，确保负载统计的准确性。
+元数据中心在分布式和单机环境中都可能遇到数据一致性问题。
+在分布式环境中，多副本同步延迟或节点故障可能导致数据不同步；在单机场景中，网络波动也可能使元数据未及时清理，从而影响统计准确性。
+
+为解决这些问题，系统采用最终一致性模型，并通过周期性垃圾回收（GC）机制自动清理过期或孤立的数据，修复因网络或系统异常造成的统计偏差。
+
+该策略确保系统在异常情况下能够自行恢复到一致状态，同时避免内存泄漏，保持统计信息的可靠性。
+
+
 
 ## GC流程
 
@@ -16,44 +23,6 @@ gcInterval = 60 * time.Second
 - **默认过期时间**：660秒（11分钟）
 - **过期检查**：比较请求创建时间与当前时间
 - **清理过程**：移除过期请求并更新统计信息
-
-### 3. 逐步清理
-
-#### 步骤1：清理过期请求
-```go
-ls.Requests.Range(func(key, value any) bool {
-    req := value.(*InferenceRequest)
-    if req.CreateTime.Add(requestExpireDuration).Before(now) {
-        ls.Requests.Delete(key)
-        ls.decEngineStats(req)  // 更新引擎统计信息
-    }
-    return true
-})
-```
-
-#### 步骤2：清理过期模型
-```go
-ls.RunningModelStats.Range(func(key, value any) bool {
-    modelStats := value.(*ModelStats)
-    if nowStamps >= modelStats.UpdateTime+expire {
-        ls.RunningModelStats.Delete(key)
-        modelStats.MetricClean()
-    }
-    return true
-})
-```
-
-#### 步骤3：清理过期引擎
-```go
-modelStats.Engines.Range(func(k, v any) bool {
-    engineStats := v.(*EngineStats)
-    if nowStamps >= engineStats.UpdatedTime+expire {
-        modelStats.Delete(k.(string))
-        engineStats.MetricClean(key.(string))
-    }
-    return true
-})
-```
 
 ## 并发处理
 
