@@ -17,7 +17,7 @@ SHELL = /bin/bash
 PROJECT_NAME    = github.com/aigw-project/metadata-center
 BINARY_NAME     = metadata-center
 DOCKER_MIRROR   = m.daocloud.io/
-BUILD_IMAGE     ?= $(DOCKER_MIRROR)docker.io/library/golang:1.23-alpine
+BUILD_IMAGE     ?= $(DOCKER_MIRROR)docker.io/library/golang:1.23
 DOCKER_IMAGE    ?= metadata-center
 
 # use for version update
@@ -100,5 +100,5 @@ build-image:
 	@docker build --build-arg BUILD_IMAGE=$(BUILD_IMAGE) -t $(DOCKER_IMAGE):latest .
 
 .PHONY: run-docker
-run-docker: docker-build
+run-docker: build-image
 	docker run --rm -p 8080:8080 -p 8081:8081 -e POD_IP=127.0.0.1 $(DOCKER_IMAGE):latest
