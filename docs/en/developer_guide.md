@@ -4,7 +4,7 @@
 
 ### Prerequisites
 
-- Go 1.23.6+
+- Go 1.24.9+
 - Docker
 
 ### Getting Started
