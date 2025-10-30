@@ -2,6 +2,13 @@
 
 专为大规模推理集群智能路由设计的，准实时负载指标统计组件
 
+## Builds
+[![CI](https://github.com/aigw-project/metadata-center/actions/workflows/ci.yml/badge.svg)](https://github.com/aigw-project/metadata-center/actions/workflows/ci.yml)
+
+## Code quality
+[![codecov](https://codecov.io/gh/aigw-project/metadata-center/branch/main/graph/badge.svg)](https://codecov.io/gh/aigw-project/metadata-center)
+[![Go Report Card](https://goreportcard.com/badge/github.com/aigw-project/metadata-center)](https://goreportcard.com/report/github.com/aigw-project/metadata-center)
+
 [English](README.md) | 中文
 
 ## 状态
