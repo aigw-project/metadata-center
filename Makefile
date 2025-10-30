@@ -55,7 +55,7 @@ run-local: build-local
 
 .PHONY: unit-test-local
 unit-test-local:
-	go test -v $(GO_MODULES) -covermode=atomic -coverprofile=coverage.out -coverpkg=$(PROJECT_NAME)/...
+	go test -v $(GO_MODULES) -covermode=atomic -coverprofile=coverage.out -coverpkg=./...
 
 .PHONY: unit-test
 unit-test:
