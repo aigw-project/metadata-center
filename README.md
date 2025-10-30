@@ -2,6 +2,13 @@
 
 A near real-time load metric collection component, designed for intelligent inference scheduler in large-scale inference services.
 
+## Builds
+[![CI](https://github.com/aigw-project/metadata-center/actions/workflows/ci.yml/badge.svg)](https://github.com/aigw-project/metadata-center/actions/workflows/ci.yml)
+
+## Code quality
+[![codecov](https://codecov.io/gh/aigw-project/metadata-center/branch/main/graph/badge.svg)](https://codecov.io/gh/aigw-project/metadata-center)
+[![Go Report Card](https://goreportcard.com/badge/github.com/aigw-project/metadata-center)](https://goreportcard.com/report/github.com/aigw-project/metadata-center)
+
 English | [中文](README_ZH.md)
 
 ## Status

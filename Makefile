@@ -17,7 +17,7 @@ SHELL = /bin/bash
 PROJECT_NAME    = github.com/aigw-project/metadata-center
 BINARY_NAME     = metadata-center
 DOCKER_MIRROR   = m.daocloud.io/
-BUILD_IMAGE     ?= $(DOCKER_MIRROR)docker.io/library/golang:1.23
+BUILD_IMAGE     ?= $(DOCKER_MIRROR)docker.io/library/golang:1.24
 DOCKER_IMAGE    ?= metadata-center
 
 # use for version update
@@ -55,7 +55,7 @@ run-local: build-local
 
 .PHONY: unit-test-local
 unit-test-local:
-	go test -v $(GO_MODULES) -covermode=atomic -coverprofile=coverage.out -coverpkg=$(PROJECT_NAME)/...
+	go test -v $(GO_MODULES) -covermode=atomic -coverprofile=coverage.out -coverpkg=./...
 
 .PHONY: unit-test
 unit-test:
