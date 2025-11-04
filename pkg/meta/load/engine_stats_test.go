@@ -52,28 +52,28 @@ func TestNewEngineLoadStats(t *testing.T) {
 
 func TestEngineStats_IncrementQueuedReqNumAndPromptLength(t *testing.T) {
 	tests := []struct {
-		name         string
-		initialReq   int32
+		name          string
+		initialReq    int32
 		initialPrompt int32
-		promptLength int32
-		expectReq    int32
-		expectPrompt int32
+		promptLength  int32
+		expectReq     int32
+		expectPrompt  int32
 	}{
 		{
-			name:         "increment from zero",
-			initialReq:   0,
+			name:          "increment from zero",
+			initialReq:    0,
 			initialPrompt: 0,
-			promptLength: 100,
-			expectReq:    1,
-			expectPrompt: 100,
+			promptLength:  100,
+			expectReq:     1,
+			expectPrompt:  100,
 		},
 		{
-			name:         "increment from existing values",
-			initialReq:   5,
+			name:          "increment from existing values",
+			initialReq:    5,
 			initialPrompt: 500,
-			promptLength: 200,
-			expectReq:    6,
-			expectPrompt: 700,
+			promptLength:  200,
+			expectReq:     6,
+			expectPrompt:  700,
 		},
 	}
 
@@ -102,22 +102,22 @@ func TestEngineStats_IncrementQueuedReqNumAndPromptLength(t *testing.T) {
 
 func TestEngineStats_DecrementQueuedReqNum(t *testing.T) {
 	tests := []struct {
-		name         string
-		initialReq   int32
+		name          string
+		initialReq    int32
 		initialPrompt int32
-		expectReq    int32
+		expectReq     int32
 	}{
 		{
-			name:         "decrement from one",
-			initialReq:   1,
+			name:          "decrement from one",
+			initialReq:    1,
 			initialPrompt: 100,
-			expectReq:    0,
+			expectReq:     0,
 		},
 		{
-			name:         "decrement from multiple",
-			initialReq:   5,
+			name:          "decrement from multiple",
+			initialReq:    5,
 			initialPrompt: 500,
-			expectReq:    4,
+			expectReq:     4,
 		},
 	}
 
@@ -146,11 +146,11 @@ func TestEngineStats_DecrementQueuedReqNum(t *testing.T) {
 
 func TestEngineStats_DecrementPromptLength(t *testing.T) {
 	tests := []struct {
-		name           string
-		initialPrompt  int32
-		promptLength   int32
-		expectPrompt   int32
-		expectSwapped  bool
+		name          string
+		initialPrompt int32
+		promptLength  int32
+		expectPrompt  int32
+		expectSwapped bool
 	}{
 		{
 			name:          "decrement positive length",
@@ -194,7 +194,7 @@ func TestEngineStats_DecrementPromptLength(t *testing.T) {
 
 			assert.Equal(t, tt.expectPrompt, engineStats.GetPromptLength())
 			assert.True(t, engineStats.UpdatedTime > 0)
-			
+
 			if tt.expectSwapped {
 				assert.Equal(t, int32(0), req.PromptLength)
 			} else {
@@ -206,19 +206,19 @@ func TestEngineStats_DecrementPromptLength(t *testing.T) {
 
 func TestEngineStats_GetQueuedReqNum(t *testing.T) {
 	tests := []struct {
-		name       string
+		name         string
 		queuedReqNum int32
-		expect     int32
+		expect       int32
 	}{
 		{
-			name:       "zero requests",
+			name:         "zero requests",
 			queuedReqNum: 0,
-			expect:     0,
+			expect:       0,
 		},
 		{
-			name:       "multiple requests",
+			name:         "multiple requests",
 			queuedReqNum: 5,
-			expect:     5,
+			expect:       5,
 		},
 	}
 
@@ -266,9 +266,9 @@ func TestEngineStats_GetPromptLength(t *testing.T) {
 
 func TestEngineStats_MetricClean(t *testing.T) {
 	tests := []struct {
-		name  string
-		ip    string
-		key   string
+		name string
+		ip   string
+		key  string
 	}{
 		{
 			name: "clean metrics for engine",

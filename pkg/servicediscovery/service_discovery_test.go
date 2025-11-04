@@ -24,13 +24,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// mockGetLocalHostsFunc is a mock implementation of GetLocalHostsFunc for testing
-type mockGetLocalHostsFunc func() (string, error)
-
-func (m mockGetLocalHostsFunc) GetLocalHosts() (string, error) {
-	return m()
-}
-
 func TestNewDNSDiscovery(t *testing.T) {
 	tests := []struct {
 		name          string
@@ -216,9 +209,9 @@ func TestDNSDiscovery_UpdateHosts(t *testing.T) {
 					Domain:         "test.local",
 					LookupInterval: 5 * time.Second,
 				},
-				nodeList: tt.initialHosts,
+				nodeList:  tt.initialHosts,
 				localHost: tt.localHost,
-				hosts:    []string{},
+				hosts:     []string{},
 			}
 
 			// Simulate the host update logic
@@ -228,7 +221,7 @@ func TestDNSDiscovery_UpdateHosts(t *testing.T) {
 			}
 
 			sd.mutex.Lock()
-			
+
 			// Remove stale hosts
 			for oldHost := range sd.nodeList {
 				if _, exists := newHostsMap[oldHost]; !exists {
@@ -252,7 +245,7 @@ func TestDNSDiscovery_UpdateHosts(t *testing.T) {
 				updatedHosts = append(updatedHosts, host)
 			}
 			sd.hosts = updatedHosts
-			
+
 			sd.mutex.Unlock()
 
 			hosts := sd.GetHosts()

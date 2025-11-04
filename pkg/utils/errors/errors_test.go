@@ -95,9 +95,9 @@ func TestServerError(t *testing.T) {
 
 func TestErrorInfo_Error(t *testing.T) {
 	tests := []struct {
-		name     string
-		error    *ErrorInfo
-		expect   string
+		name   string
+		error  *ErrorInfo
+		expect string
 	}{
 		{
 			name: "basic error info",
@@ -120,9 +120,9 @@ func TestErrorInfo_Error(t *testing.T) {
 
 func TestErrorInfo_GetStatusCode(t *testing.T) {
 	tests := []struct {
-		name     string
-		error    *ErrorInfo
-		expect   int
+		name   string
+		error  *ErrorInfo
+		expect int
 	}{
 		{
 			name: "invalid input code",
@@ -150,10 +150,10 @@ func TestErrorInfo_GetStatusCode(t *testing.T) {
 
 func TestErrorInfo_SetMassage(t *testing.T) {
 	tests := []struct {
-		name     string
-		error    *ErrorInfo
-		message  string
-		expect   *ErrorInfo
+		name    string
+		error   *ErrorInfo
+		message string
+		expect  *ErrorInfo
 	}{
 		{
 			name: "set message",
@@ -182,9 +182,9 @@ func TestErrorInfo_SetMassage(t *testing.T) {
 
 func TestParseJSONFailed(t *testing.T) {
 	tests := []struct {
-		name     string
-		err      error
-		expect   *ErrorInfo
+		name   string
+		err    error
+		expect *ErrorInfo
 	}{
 		{
 			name: "JSON syntax error",
@@ -252,9 +252,9 @@ func TestParseJSONFailed(t *testing.T) {
 
 func TestExtractTypeErr(t *testing.T) {
 	tests := []struct {
-		name     string
-		message  string
-		expect   string
+		name    string
+		message string
+		expect  string
 	}{
 		{
 			name:    "valid type error",
@@ -278,9 +278,9 @@ func TestExtractTypeErr(t *testing.T) {
 
 func TestExtractTagErr(t *testing.T) {
 	tests := []struct {
-		name     string
-		message  string
-		expect   string
+		name    string
+		message string
+		expect  string
 	}{
 		{
 			name:    "max validation error",

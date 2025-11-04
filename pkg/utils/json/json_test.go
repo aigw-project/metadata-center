@@ -42,7 +42,7 @@ func TestMarshalToString(t *testing.T) {
 			expect: "true",
 		},
 		{
-			name:   "struct value",
+			name: "struct value",
 			input: struct {
 				Name string `json:"name"`
 				Age  int    `json:"age"`
@@ -57,7 +57,7 @@ func TestMarshalToString(t *testing.T) {
 			input:  []string{"a", "b", "c"},
 			expect: `["a","b","c"]`,
 		},
-		
+
 		{
 			name:   "nil value",
 			input:  nil,

@@ -31,36 +31,36 @@ import (
 
 func TestLogger(t *testing.T) {
 	tests := []struct {
-		name     string
-		output   string
-		filePath string
+		name      string
+		output    string
+		filePath  string
 		expectNil bool
 	}{
 		{
-			name:     "stdout output",
-			output:   "stdout",
+			name:      "stdout output",
+			output:    "stdout",
 			expectNil: false,
 		},
 		{
-			name:     "stderr output",
-			output:   "stderr",
+			name:      "stderr output",
+			output:    "stderr",
 			expectNil: false,
 		},
 		{
-			name:     "file output with valid path",
-			output:   "file",
-			filePath: filepath.Join(t.TempDir(), "test.log"),
+			name:      "file output with valid path",
+			output:    "file",
+			filePath:  filepath.Join(t.TempDir(), "test.log"),
 			expectNil: false,
 		},
 		{
-			name:     "file output with empty path",
-			output:   "file",
-			filePath: "",
+			name:      "file output with empty path",
+			output:    "file",
+			filePath:  "",
 			expectNil: false,
 		},
 		{
-			name:     "invalid output type",
-			output:   "invalid",
+			name:      "invalid output type",
+			output:    "invalid",
 			expectNil: false, // Defaults to stdout
 		},
 	}
@@ -116,9 +116,9 @@ func TestCustomLogFormatter(t *testing.T) {
 			latency: 2 * time.Millisecond,
 			keys: map[string]any{
 				string(trace.TraceKey): "trace-123",
-				"requestId":           "req-456",
-				"userId":              "user-789",
-				"eventType":           "api_call",
+				"requestId":            "req-456",
+				"userId":               "user-789",
+				"eventType":            "api_call",
 			},
 			expect: "traceID=[trace-123], requestID=[req-456], userID=user-789, clientIP=192.0.2.1, method=POST, path=/api/v1/test, url=/api/v1/test, eventType=api_call, proto=HTTP/1.1, respCode=201, latency=2000us, UA=, respBodySize=0，err=\n",
 		},
@@ -166,20 +166,20 @@ func TestRecovery(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	tests := []struct {
-		name         string
-		panicValue   any
+		name       string
+		panicValue any
 	}{
 		{
-			name:         "panic with string",
-			panicValue:   "test panic",
+			name:       "panic with string",
+			panicValue: "test panic",
 		},
 		{
-			name:         "panic with error",
-			panicValue:   assert.AnError,
+			name:       "panic with error",
+			panicValue: assert.AnError,
 		},
 		{
-			name:         "panic with nil",
-			panicValue:   nil,
+			name:       "panic with nil",
+			panicValue: nil,
 		},
 	}
 
@@ -207,31 +207,31 @@ func TestRequestMetrics(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	tests := []struct {
-		name     string
-		path     string
-		method   string
-		query    string
+		name   string
+		path   string
+		method string
+		query  string
 	}{
 		{
-			name:     "metrics endpoint should not record",
-			path:     "/metrics",
-			method:   "GET",
+			name:   "metrics endpoint should not record",
+			path:   "/metrics",
+			method: "GET",
 		},
 		{
-			name:     "root endpoint should not record",
-			path:     "/",
-			method:   "GET",
+			name:   "root endpoint should not record",
+			path:   "/",
+			method: "GET",
 		},
 		{
-			name:     "regular endpoint should record",
-			path:     "/api/v1/test",
-			method:   "POST",
+			name:   "regular endpoint should record",
+			path:   "/api/v1/test",
+			method: "POST",
 		},
 		{
-			name:     "endpoint with domain query should record",
-			path:     "/api/v1/data",
-			method:   "GET",
-			query:    "domain=example.com",
+			name:   "endpoint with domain query should record",
+			path:   "/api/v1/data",
+			method: "GET",
+			query:  "domain=example.com",
 		},
 	}
 
@@ -242,7 +242,7 @@ func TestRequestMetrics(t *testing.T) {
 
 			w := httptest.NewRecorder()
 			c, _ := gin.CreateTestContext(w)
-			
+
 			url := tt.path
 			if tt.query != "" {
 				url = tt.path + "?" + tt.query
@@ -263,23 +263,23 @@ func TestTrace(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	tests := []struct {
-		name       string
-		header     map[string]string
+		name        string
+		header      map[string]string
 		expectTrace bool
 	}{
 		{
-			name:       "no trace header",
-			header:     map[string]string{},
+			name:        "no trace header",
+			header:      map[string]string{},
 			expectTrace: true, // Should generate a trace ID
 		},
 		{
-			name:       "with trace header",
-			header:     map[string]string{"TraceId": "custom-trace-123"},
+			name:        "with trace header",
+			header:      map[string]string{"TraceId": "custom-trace-123"},
 			expectTrace: true,
 		},
 		{
-			name:       "empty trace header",
-			header:     map[string]string{"TraceId": ""},
+			name:        "empty trace header",
+			header:      map[string]string{"TraceId": ""},
 			expectTrace: true, // Should generate a trace ID
 		},
 	}
@@ -320,9 +320,9 @@ func TestTrace(t *testing.T) {
 
 func TestGetMiddlewares(t *testing.T) {
 	tests := []struct {
-		name           string
-		configSetup    func()
-		expectedCount  int
+		name          string
+		configSetup   func()
+		expectedCount int
 	}{
 		{
 			name: "all middlewares available",

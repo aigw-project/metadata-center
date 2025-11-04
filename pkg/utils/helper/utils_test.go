@@ -27,13 +27,13 @@ import (
 
 func TestNewIPAM(t *testing.T) {
 	tests := []struct {
-		name    string
-		base    string
+		name     string
+		base     string
 		expectIP string
 	}{
 		{
-			name:    "valid CIDR block",
-			base:    "192.168.0.0/16",
+			name:     "valid CIDR block",
+			base:     "192.168.0.0/16",
 			expectIP: "192.168.0.1",
 		},
 	}
