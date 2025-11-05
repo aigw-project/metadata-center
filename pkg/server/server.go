@@ -25,6 +25,7 @@ import (
 
 	"github.com/aigw-project/metadata-center/pkg/config"
 	"github.com/aigw-project/metadata-center/pkg/log"
+	"github.com/aigw-project/metadata-center/pkg/meta/cache"
 	"github.com/aigw-project/metadata-center/pkg/meta/load"
 	"github.com/aigw-project/metadata-center/pkg/middleware"
 	"github.com/aigw-project/metadata-center/pkg/replicator"
@@ -49,6 +50,7 @@ func NewServer() *Server {
 		g := engine.Group("")
 		router.RegisterLogAPI(g)
 		router.RegisterLoadAPI(g)
+		router.RegisterCacheAPI(g)
 		router.RegisterStatusAPI(g)
 		router.RegisterReplicateAPI(g)
 	}
@@ -109,5 +111,6 @@ func (s *Server) Init() {
 	}
 
 	load.Init()
+	cache.Init()
 	replicator.Init()
 }
