@@ -28,8 +28,8 @@ type CacheAPI struct{}
 
 // LocationResponse represents a cache location with additional length information
 type LocationResponse struct {
-	*cache.Location
-	Length int `json:"length"` // Length of the cached content
+	IP     string `json:"ip"`     // IP address of the cache node
+	Length int    `json:"length"` // Length of the cached content
 }
 
 // CacheQueryResponse contains multiple location responses for cache queries
@@ -43,11 +43,10 @@ func NewQueryResponse(m map[uint64]int) *CacheQueryResponse {
 		Locations: make([]*LocationResponse, 0, len(m)),
 	}
 	for key, length := range m {
-		l := &cache.Location{}
-		l.Decode(key)
+		ip := cache.Decode(key)
 		r.Locations = append(r.Locations, &LocationResponse{
-			Location: l,
-			Length:   length * cache.DefaultChunkLen, // TODO: support configuration
+			IP:     ip,
+			Length: length * cache.DefaultChunkLen,
 		})
 
 	}

@@ -49,13 +49,10 @@ func TestLocation_EncodeDecode(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			loc := &Location{NodeIP: tt.nodeIP}
-			encoded := loc.Encode()
-
-			decoded := &Location{}
-			decoded.Decode(encoded)
-
-			assert.Equal(t, tt.expected, decoded.NodeIP)
+			ip := tt.nodeIP
+			encodeIP := Encode(ip)
+			decodeIP := Decode(encodeIP)
+			assert.Equal(t, tt.expected, decodeIP)
 		})
 	}
 }
@@ -109,28 +106,28 @@ func TestCachePool_SaveHash(t *testing.T) {
 		name        string
 		key         string
 		keys        []uint64
-		location    *Location
+		ip          string
 		shouldPanic bool
 	}{
 		{
-			name:        "save with valid location",
+			name:        "save with valid IP",
 			key:         "test-cluster",
 			keys:        []uint64{111, 222, 333},
-			location:    &Location{NodeIP: "192.168.1.100"},
+			ip:          "192.168.1.100",
 			shouldPanic: false,
 		},
 		{
-			name:        "save with nil location",
+			name:        "save with empty IP",
 			key:         "test-cluster",
 			keys:        []uint64{444, 555},
-			location:    nil,
-			shouldPanic: true,
+			ip:          "",
+			shouldPanic: false,
 		},
 		{
 			name:        "save with empty keys",
 			key:         "test-cluster",
 			keys:        []uint64{},
-			location:    &Location{NodeIP: "10.0.0.1"},
+			ip:          "10.0.0.1",
 			shouldPanic: false,
 		},
 	}
@@ -142,17 +139,15 @@ func TestCachePool_SaveHash(t *testing.T) {
 			if tt.shouldPanic {
 				// This should panic with nil location
 				assert.Panics(t, func() {
-					pool.SaveHash(tt.key, tt.keys, tt.location)
+					pool.SaveHash(tt.key, tt.keys, tt.ip)
 				})
 			} else {
 				// This should not panic
-				pool.SaveHash(tt.key, tt.keys, tt.location)
+				pool.SaveHash(tt.key, tt.keys, tt.ip)
 
 				// Verify the data was saved by querying
-				if tt.location != nil {
-					result := pool.QueryHash(tt.key, tt.keys, 10)
-					assert.NotNil(t, result)
-				}
+				result := pool.QueryHash(tt.key, tt.keys, 10)
+				assert.NotNil(t, result)
 			}
 		})
 	}
@@ -185,7 +180,7 @@ func TestCachePool_GC(t *testing.T) {
 
 			// Preload data
 			for key, keys := range tt.preload {
-				pool.SaveHash(key, keys, &Location{NodeIP: "192.168.1.1"})
+				pool.SaveHash(key, keys, "192.168.1.1")
 			}
 
 			// Perform GC
@@ -212,33 +207,27 @@ func TestQuery(t *testing.T) {
 		{
 			name: "query with empty prompt hash",
 			param: &QueryParam{
-				Cluster: "test-cluster",
-				CommonCacheParams: CommonCacheParams{
-					PromptHash: []uint64{},
-				},
-				TopK: 10,
+				Cluster:    "test-cluster",
+				PromptHash: []uint64{},
+				TopK:       10,
 			},
 			expected: map[uint64]int{},
 		},
 		{
 			name: "query with nil prompt hash",
 			param: &QueryParam{
-				Cluster: "test-cluster",
-				CommonCacheParams: CommonCacheParams{
-					PromptHash: nil,
-				},
-				TopK: 5,
+				Cluster:    "test-cluster",
+				PromptHash: nil,
+				TopK:       5,
 			},
 			expected: map[uint64]int{},
 		},
 		{
 			name: "query with valid prompt hash",
 			param: &QueryParam{
-				Cluster: "test-cluster",
-				CommonCacheParams: CommonCacheParams{
-					PromptHash: []uint64{123, 456},
-				},
-				TopK: 3,
+				Cluster:    "test-cluster",
+				PromptHash: []uint64{123, 456},
+				TopK:       3,
 			},
 			expected: map[uint64]int{},
 		},
@@ -257,42 +246,50 @@ func TestQuery(t *testing.T) {
 
 func TestSave(t *testing.T) {
 	tests := []struct {
-		name     string
-		param    *SaveParam
-		hasError bool
+		name       string
+		param      *SaveParam
+		shouldSave bool
+		expectedIP string
 	}{
 		{
 			name: "save with valid parameters",
 			param: &SaveParam{
-				Cluster: "test-cluster",
-				CommonCacheParams: CommonCacheParams{
-					PromptHash: []uint64{789, 101112},
-				},
-				Location: &Location{NodeIP: "192.168.1.200"},
+				Cluster:    "test-cluster",
+				PromptHash: []uint64{789, 101112},
+				IP:         "192.168.1.200",
 			},
-			hasError: false,
+			shouldSave: true,
+			expectedIP: "192.168.1.200",
 		},
 		{
-			name: "save with nil location",
+			name: "save with empty IP",
 			param: &SaveParam{
-				Cluster: "test-cluster",
-				CommonCacheParams: CommonCacheParams{
-					PromptHash: []uint64{131415},
-				},
-				Location: nil,
+				Cluster:    "test-cluster",
+				PromptHash: []uint64{131415},
+				IP:         "",
 			},
-			hasError: true,
+			shouldSave: true,
+			expectedIP: "",
 		},
 		{
 			name: "save with empty prompt hash",
 			param: &SaveParam{
-				Cluster: "test-cluster",
-				CommonCacheParams: CommonCacheParams{
-					PromptHash: []uint64{},
-				},
-				Location: &Location{NodeIP: "10.0.0.2"},
+				Cluster:    "test-cluster",
+				PromptHash: []uint64{},
+				IP:         "10.0.0.2",
 			},
-			hasError: false,
+			shouldSave: false,
+			expectedIP: "",
+		},
+		{
+			name: "save with nil prompt hash",
+			param: &SaveParam{
+				Cluster:    "test-cluster",
+				PromptHash: nil,
+				IP:         "10.0.0.3",
+			},
+			shouldSave: false,
+			expectedIP: "",
 		},
 	}
 
@@ -301,21 +298,36 @@ func TestSave(t *testing.T) {
 			// Initialize cache for testing
 			Init()
 
-			for _, tt := range tests {
-				t.Run(tt.name, func(t *testing.T) {
-					// Initialize cache for testing
-					Init()
+			// Save the data
+			Save(tt.param)
 
-					if tt.hasError {
-						// This should panic with nil location
-						assert.Panics(t, func() {
-							Save(tt.param)
-						})
-					} else {
-						// This should not panic
-						Save(tt.param)
-					}
+			// Verify the data was saved correctly
+			if tt.shouldSave && len(tt.param.PromptHash) > 0 {
+				// Query to verify the data was saved
+				result := Query(&QueryParam{
+					Cluster:    tt.param.Cluster,
+					PromptHash: tt.param.PromptHash,
+					TopK:       10,
 				})
+
+				// Should have results for the saved keys
+				assert.NotEmpty(t, result, "Expected data to be saved for %s", tt.name)
+
+				// Verify the IP encoding/decoding works
+				for key := range result {
+					decodedIP := Decode(key)
+					assert.Equal(t, tt.expectedIP, decodedIP, "IP encoding/decoding mismatch for %s", tt.name)
+				}
+			} else {
+				// For cases where no data should be saved, verify no results
+				if len(tt.param.PromptHash) > 0 {
+					result := Query(&QueryParam{
+						Cluster:    tt.param.Cluster,
+						PromptHash: tt.param.PromptHash,
+						TopK:       10,
+					})
+					assert.Empty(t, result, "Expected no data to be saved for %s", tt.name)
+				}
 			}
 		})
 	}
@@ -376,34 +388,14 @@ func TestForceGC(t *testing.T) {
 			// Preload data if needed
 			for key, keys := range tt.preload {
 				Save(&SaveParam{
-					Cluster: key,
-					CommonCacheParams: CommonCacheParams{
-						PromptHash: keys,
-					},
-					Location: &Location{NodeIP: "192.168.1.1"},
+					Cluster:    key,
+					PromptHash: keys,
+					IP:         "192.168.1.1",
 				})
 			}
 
 			// Force GC should not panic
 			ForceGC()
-		})
-	}
-}
-
-func TestNewCachePool(t *testing.T) {
-	tests := []struct {
-		name string
-	}{
-		{
-			name: "create new cache pool",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			pool := NewCachePool()
-			assert.NotNil(t, pool)
-			assert.NotNil(t, pool.hash)
 		})
 	}
 }

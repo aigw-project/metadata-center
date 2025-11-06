@@ -20,21 +20,6 @@ import (
 	"github.com/aigw-project/metadata-center/pkg/utils/logger"
 )
 
-// Location represents a cache node location with IP addresses
-type Location struct {
-	NodeIP string `json:"node" binding:"required,ipv4"` // Node IP address
-}
-
-// Encode converts location to uint64 representation
-func (l *Location) Encode() uint64 {
-	return uint64(IPStr2Int(l.NodeIP)) << 32
-}
-
-// Decode converts uint64 back to location
-func (l *Location) Decode(value uint64) {
-	l.NodeIP = IntToIP(uint32(value >> 32))
-}
-
 // CachePool manages multiple cache instances using radix trees
 type CachePool struct {
 	// pool stores all cache data by domain key
@@ -68,7 +53,7 @@ func (cp *CachePool) QueryHash(key string, keys []uint64, topK int) map[uint64]i
 }
 
 // SaveHash stores pre-computed hash keys in cache with location information
-func (cp *CachePool) SaveHash(key string, keys []uint64, local *Location) {
+func (cp *CachePool) SaveHash(key string, keys []uint64, ip string) {
 	v, ok := cp.pool.Load(key)
 	if !ok {
 		// Use LoadOrStore to avoid concurrency issues
@@ -76,7 +61,7 @@ func (cp *CachePool) SaveHash(key string, keys []uint64, local *Location) {
 	}
 	tree := v.(*RadixTree)
 	logger.Debugf("model %s save prompt to keys: %v", key, keys)
-	tree.Insert(keys, local.Encode(), nil)
+	tree.Insert(keys, Encode(ip), nil)
 }
 
 // GC performs garbage collection on all cache trees

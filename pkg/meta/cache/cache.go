@@ -49,15 +49,10 @@ func Init() {
 	logger.Infof("cache initialization successful")
 }
 
-// CommonCacheParams contains common parameters for cache operations
-type CommonCacheParams struct {
-	PromptHash []uint64 `json:"prompt_hash" binding:"required"`
-}
-
 // QueryParam defines parameters for cache query operations
 type QueryParam struct {
-	Cluster string `json:"cluster" form:"cluster" binding:"required"`
-	CommonCacheParams
+	Cluster    string   `json:"cluster" form:"cluster" binding:"required"`
+	PromptHash []uint64 `json:"prompt_hash" binding:"required"`
 	// TopK represents the maximum number of results to return, 0 means use default configuration value
 	TopK int `json:"top_k"`
 }
@@ -72,15 +67,15 @@ func Query(p *QueryParam) map[uint64]int {
 
 // SaveParam defines parameters for cache save operations
 type SaveParam struct {
-	Cluster string `json:"cluster" form:"cluster" binding:"required"`
-	CommonCacheParams
-	Location *Location `json:"location" binding:"required"`
+	Cluster    string   `json:"cluster" form:"cluster" binding:"required"`
+	PromptHash []uint64 `json:"prompt_hash" binding:"required"`
+	IP         string   `json:"ip" binding:"required,ipv4"`
 }
 
 // Save stores a new cache entry with the specified parameters
 func Save(p *SaveParam) {
 	if len(p.PromptHash) != 0 {
-		cachePool.SaveHash(p.Cluster, p.PromptHash, p.Location)
+		cachePool.SaveHash(p.Cluster, p.PromptHash, p.IP)
 		return
 	}
 }

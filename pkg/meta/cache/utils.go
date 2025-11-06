@@ -163,3 +163,13 @@ func (m *TopKMap) GetMap() map[uint64]int {
 	}
 	return ret
 }
+
+// Encode converts location to uint64 representation
+func Encode(ip string) uint64 {
+	return uint64(IPStr2Int(ip)) << 32
+}
+
+// Decode converts uint64 back to location
+func Decode(value uint64) string {
+	return IntToIP(uint32(value >> 32))
+}
