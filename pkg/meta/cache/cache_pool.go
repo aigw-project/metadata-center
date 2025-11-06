@@ -22,19 +22,17 @@ import (
 
 // Location represents a cache node location with IP addresses
 type Location struct {
-	NodeIP        string `json:"node" binding:"required,ipv4"` // Node IP address
-	CoordinatorIP string `json:"coordinator"`                  // Coordinator IP address
+	NodeIP string `json:"node" binding:"required,ipv4"` // Node IP address
 }
 
 // Encode converts location to uint64 representation
 func (l *Location) Encode() uint64 {
-	return uint64(IPStr2Int(l.NodeIP))<<32 | uint64(IPStr2Int(l.CoordinatorIP))
+	return uint64(IPStr2Int(l.NodeIP)) << 32
 }
 
 // Decode converts uint64 back to location
 func (l *Location) Decode(value uint64) {
 	l.NodeIP = IntToIP(uint32(value >> 32))
-	l.CoordinatorIP = IntToIP(uint32(value))
 }
 
 // CachePool manages multiple cache instances using radix trees
@@ -43,13 +41,6 @@ type CachePool struct {
 	pool sync.Map
 	// hash calculates prompt bytes to uint64 hashes
 	hash *Hash
-}
-
-// hashPool reuses hash result slices to reduce allocations
-var hashPool = sync.Pool{
-	New: func() interface{} {
-		return make([]uint64, 0, 8)
-	},
 }
 
 // DefaultChunkLen defines the default chunk size for hash calculation
@@ -65,23 +56,6 @@ func NewCachePool() *CachePool {
 	}
 }
 
-// Query searches cache by prompt bytes and returns topK matches
-func (cp *CachePool) Query(key string, prompt []byte, topK int) map[uint64]int {
-	v, ok := cp.pool.Load(key)
-	if !ok {
-		return map[uint64]int{}
-	}
-	tree := v.(*RadixTree)
-	buf := hashPool.Get().([]uint64)
-	defer func() {
-		buf = buf[:0]
-		hashPool.Put(buf)
-	}()
-	keys := cp.hash.PromptToHash(prompt, buf)
-	logger.Debugf("model %s query prompt to keys: %v", key, keys)
-	return tree.MatchAll(keys, topK)
-}
-
 // QueryHash searches cache by pre-computed hash keys and returns topK matches
 func (cp *CachePool) QueryHash(key string, keys []uint64, topK int) map[uint64]int {
 	v, ok := cp.pool.Load(key)
@@ -91,24 +65,6 @@ func (cp *CachePool) QueryHash(key string, keys []uint64, topK int) map[uint64]i
 	tree := v.(*RadixTree)
 	logger.Debugf("model %s query prompt to keys: %v", key, keys)
 	return tree.MatchAll(keys, topK)
-}
-
-// Save stores prompt data in cache with location information
-func (cp *CachePool) Save(key string, prompt []byte, local *Location) {
-	v, ok := cp.pool.Load(key)
-	if !ok {
-		// Use LoadOrStore to avoid concurrency issues
-		v, _ = cp.pool.LoadOrStore(key, NewRadixTree(key))
-	}
-	tree := v.(*RadixTree)
-	buf := hashPool.Get().([]uint64)
-	defer func() {
-		buf = buf[:0]
-		hashPool.Put(buf)
-	}()
-	keys := cp.hash.PromptToHash(prompt, buf)
-	logger.Debugf("model %s save prompt to keys: %v", key, keys)
-	tree.Insert(keys, local.Encode(), nil)
 }
 
 // SaveHash stores pre-computed hash keys in cache with location information

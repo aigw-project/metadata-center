@@ -176,7 +176,6 @@ func (t *RadixTree) Insert(key []uint64, data uint64, _ any) {
 		// current.lock.Unlock()
 		return
 	}
-	return
 }
 
 // MatchAll returns all data that matches the common prefix of the key

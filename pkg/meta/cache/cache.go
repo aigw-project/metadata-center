@@ -35,7 +35,7 @@ func cronClean(pool *CachePool, ticker *time.Ticker) {
 	for range ticker.C {
 		start := time.Now()
 		pool.GC()
-		logger.Infof("completed full pool GC, duration: %d", time.Now().Sub(start))
+		logger.Infof("completed full pool GC, duration: %d", time.Since(start))
 	}
 }
 
@@ -51,13 +51,12 @@ func Init() {
 
 // CommonCacheParams contains common parameters for cache operations
 type CommonCacheParams struct {
-	Prompt     []byte   `json:"prompt" binding:"either_or=PromptHash,mutually_exclusive=PromptHash"`
-	PromptHash []uint64 `json:"prompt_hash" binding:"either_or=Prompt,mutually_exclusive=Prompt"`
+	PromptHash []uint64 `json:"prompt_hash" binding:"required"`
 }
 
 // QueryParam defines parameters for cache query operations
 type QueryParam struct {
-	Domain string `json:"domain" form:"domain" binding:"required"`
+	Cluster string `json:"cluster" form:"cluster" binding:"required"`
 	CommonCacheParams
 	// TopK represents the maximum number of results to return, 0 means use default configuration value
 	TopK int `json:"top_k"`
@@ -66,14 +65,14 @@ type QueryParam struct {
 // Query searches the cache for matching entries based on prompt or prompt hash
 func Query(p *QueryParam) map[uint64]int {
 	if len(p.PromptHash) != 0 {
-		return cachePool.QueryHash(p.Domain, p.PromptHash, p.TopK)
+		return cachePool.QueryHash(p.Cluster, p.PromptHash, p.TopK)
 	}
-	return cachePool.Query(p.Domain, p.Prompt, p.TopK)
+	return map[uint64]int{}
 }
 
 // SaveParam defines parameters for cache save operations
 type SaveParam struct {
-	Domain string `json:"domain" form:"domain" binding:"required"`
+	Cluster string `json:"cluster" form:"cluster" binding:"required"`
 	CommonCacheParams
 	Location *Location `json:"location" binding:"required"`
 }
@@ -81,20 +80,24 @@ type SaveParam struct {
 // Save stores a new cache entry with the specified parameters
 func Save(p *SaveParam) {
 	if len(p.PromptHash) != 0 {
-		cachePool.SaveHash(p.Domain, p.PromptHash, p.Location)
+		cachePool.SaveHash(p.Cluster, p.PromptHash, p.Location)
 		return
 	}
-	cachePool.Save(p.Domain, p.Prompt, p.Location)
 }
 
 // ModelQueryRequest defines parameters for model tree information queries
 type ModelQueryRequest struct {
-	Domain string `json:"domain" form:"domain" binding:"required"`
+	Cluster string `json:"cluster" form:"cluster" binding:"required"`
 }
 
-// ModelQuery retrieves radix tree information for a specific domain
+// ModelQuery retrieves radix tree information for a specific cluster
 func ModelQuery(p *ModelQueryRequest) *RadixTreeInfo {
-	v, ok := cachePool.pool.Load(p.Domain)
+	// Check if cachePool is initialized
+	if cachePool == nil {
+		return &RadixTreeInfo{}
+	}
+
+	v, ok := cachePool.pool.Load(p.Cluster)
 	if !ok {
 		return &RadixTreeInfo{}
 	}
