@@ -19,13 +19,18 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/aigw-project/metadata-center/pkg/meta/cache"
 	"github.com/aigw-project/metadata-center/pkg/meta/load"
 	"github.com/aigw-project/metadata-center/pkg/utils/logger"
 )
 
 const (
+	CacheGCInterval   = "METADATA_CENTER_CACHE_GC_INTERVAL"
+	CacheExpire       = "METADATA_CENTER_CACHE_EXPIRE"
+	CacheDefaultTopK  = "METADATA_CENTER_CACHE_TOPK"
 	LoadGCInterval    = "METADATA_CENTER_LOAD_GC_INTERVAL"
 	LoadRequestExpire = "METADATA_CENTER_LOAD_REQ_EXPIRE"
+	DEBUG_MODE        = "METADATA_CENTER_DEBUG_MODE"
 )
 
 type EnvSetter struct {
@@ -34,11 +39,23 @@ type EnvSetter struct {
 }
 
 var envSetters = []EnvSetter{
+	{CacheGCInterval, func(env string) {
+		DurationFromEnv(env, cache.SetGcInterval)
+	}},
+	{CacheExpire, func(env string) {
+		DurationFromEnv(env, cache.SetExpireDuration)
+	}},
+	{CacheDefaultTopK, func(env string) {
+		IntFromEnv(env, cache.SetDefaultQueryTopK)
+	}},
 	{LoadGCInterval, func(env string) {
 		DurationFromEnv(env, load.SetGCInterval)
 	}},
 	{LoadRequestExpire, func(env string) {
 		DurationFromEnv(env, load.SetRequestExpireDuration)
+	}},
+	{DEBUG_MODE, func(env string) {
+		BoolFromEnv(env, cache.SetDebugMode)
 	}},
 }
 

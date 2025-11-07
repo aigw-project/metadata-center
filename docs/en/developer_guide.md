@@ -29,7 +29,9 @@ metadata-center/
 │   ├── config/              # Configuration management
 │   ├── ginx/                # Gin framework extensions
 │   ├── log/                 # Logging utilities
-│   ├── meta/load/           # Load statistics management
+│   ├── meta/
+│   │   ├── cache/           # Cache management
+│   │   └── load/            # Load statistics management
 │   ├── middleware/          # HTTP middleware
 │   ├── prom/                # Prometheus metrics
 │   ├── replicator/          # Data synchronization

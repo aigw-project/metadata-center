@@ -20,7 +20,9 @@ import (
 
 	"github.com/aigw-project/metadata-center/pkg/api"
 	"github.com/aigw-project/metadata-center/pkg/log"
+	"github.com/aigw-project/metadata-center/pkg/meta/cache"
 	"github.com/aigw-project/metadata-center/pkg/replicator"
+	"github.com/aigw-project/metadata-center/pkg/utils/logger"
 )
 
 // RegisterLoadAPI registers load-related API endpoints
@@ -37,6 +39,25 @@ func RegisterLoadAPI(g *gin.RouterGroup) {
 	prompt := gGroup.Group("prompt")
 	{
 		prompt.DELETE("", loadAPI.DeletePrompt)
+	}
+}
+
+func RegisterCacheAPI(g *gin.RouterGroup) {
+	cacheAPI := api.CacheAPI{}
+	gGroup := g.Group("/v1/cache")
+	{
+		gGroup.POST("query", cacheAPI.Query)
+		gGroup.POST("save", cacheAPI.Save)
+	}
+	cacheAdminAPI := api.CacheAdminAPI{}
+	adminGroup := g.Group("/cache/admin")
+	{
+		if cache.IsDebugMode() {
+			logger.Infof("cache admin api running as debug mode")
+			debugGroup := adminGroup.Group("debug")
+			debugGroup.GET("model_tree", cacheAdminAPI.QueryStats)
+			debugGroup.POST("force_gc", cacheAdminAPI.ForceGC)
+		}
 	}
 }
 

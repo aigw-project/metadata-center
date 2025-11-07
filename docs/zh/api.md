@@ -116,7 +116,118 @@
 }
 ```
 
-### 5. 日志级别管理 API
+### 5. 查询缓存条目
+
+**URL**: `/v1/cache/query`  
+**方法**: `POST`
+
+**请求体**:
+```json
+{
+  "cluster": "string",
+  "prompt_hash": [0],
+  "top_k": 0
+}
+```
+
+**请求参数**:
+| 参数名       | 类型      | 是否必需 | 描述                              |
+|--------------|-----------|----------|-----------------------------------|
+| cluster      | string    | 是       | 集群名称                          |
+| prompt_hash  | []uint64  | 是       | 提示词哈希值数组                  |
+| top_k        | integer   | 否       | 最大返回结果数（0表示使用默认值） |
+
+**响应格式**:
+```json
+{
+  "status": "OK",
+  "error": null,
+  "data": {
+    "locations": [
+      {
+        "ip": "string",
+        "length": 0
+      }
+    ]
+  },
+  "trace_id": "string"
+}
+```
+
+### 6. 保存缓存条目
+
+**URL**: `/v1/cache/save`  
+**方法**: `POST`
+
+**请求体**:
+```json
+{
+  "cluster": "string",
+  "prompt_hash": [0],
+  "ip": "string"
+}
+```
+
+**请求参数**:
+| 参数名       | 类型      | 是否必需 | 描述                 |
+|--------------|-----------|----------|----------------------|
+| cluster      | string    | 是       | 集群名称             |
+| prompt_hash  | []uint64  | 是       | 提示词哈希值数组     |
+| ip           | string    | 是       | IPv4 地址            |
+
+**响应格式**:
+```json
+{
+  "status": "OK",
+  "error": null,
+  "data": null,
+  "trace_id": "string"
+}
+```
+
+### 7. 缓存调试 API
+
+这些 API 仅在调试模式下可用。
+
+#### 7.1 查询缓存模型树统计信息
+
+**URL**: `/cache/admin/debug/model_tree`  
+**方法**: `GET`
+
+**查询参数**:
+| 参数名   | 类型   | 是否必需 | 描述       |
+|----------|--------|----------|------------|
+| cluster  | string | 是       | 集群名称   |
+
+**响应格式**:
+```json
+{
+  "status": "OK",
+  "error": null,
+  "data": {
+    "nodes": 0,
+    "depth": 0
+  },
+  "trace_id": "string"
+}
+```
+
+#### 7.2 强制缓存垃圾回收
+
+**URL**: `/cache/admin/debug/force_gc`  
+**方法**: `POST`
+
+**响应格式**:
+```json
+{
+  "status": "OK",
+  "error": null,
+  "data": null,
+  "trace_id": "string"
+}
+```
+
+### 8. 日志级别管理 API
 
 **URL**: `/log/level`  
 **方法**: `POST`
@@ -143,7 +254,7 @@
 }
 ```
 
-### 6. Prometheus 指标 API
+### 9. Prometheus 指标 API
 
 **URL**: `/metrics`  
 **方法**: `GET`
@@ -213,6 +324,31 @@ curl -X DELETE "http://localhost:80/v1/load/prompt" \
     "ip": "192.168.1.1"
   }'
 ```
+
+### 查询缓存条目
+
+```bash
+curl -X POST "http://localhost:80/v1/cache/query" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "cluster": "mycluster",
+    "prompt_hash": [1234567890],
+    "top_k": 5
+  }'
+```
+
+### 保存缓存条目
+```bash
+curl -X POST "http://localhost:80/v1/cache/save" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "cluster": "mycluster",
+    "prompt_hash": [1234567890],
+    "ip": "192.168.1.100"
+  }'
+```
+
+### 缓存调试 API（仅调试模式）\n\n#### 查询缓存模型树统计信息\n```bash\ncurl -X GET "http://localhost:80/cache/admin/de极速模式下的响应，仅输出最终结果。
 
 ### 修改日志级别
 
