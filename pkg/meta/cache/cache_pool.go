@@ -26,9 +26,6 @@ type CachePool struct {
 	pool sync.Map
 }
 
-// DefaultChunkLen defines the default chunk size for hash calculation
-const DefaultChunkLen = 512
-
 // NewCachePool creates a new cache pool instance
 func NewCachePool() *CachePool {
 	return &CachePool{

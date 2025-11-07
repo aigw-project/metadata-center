@@ -46,7 +46,7 @@ func NewQueryResponse(m map[uint64]int) *CacheQueryResponse {
 		ip := cache.Decode(key)
 		r.Locations = append(r.Locations, &LocationResponse{
 			IP:     ip,
-			Length: length * cache.DefaultChunkLen,
+			Length: length,
 		})
 	}
 	return r
