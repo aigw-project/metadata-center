@@ -24,8 +24,6 @@ import (
 type CachePool struct {
 	// pool stores all cache data by domain key
 	pool sync.Map
-	// hash calculates prompt bytes to uint64 hashes
-	hash *Hash
 }
 
 // DefaultChunkLen defines the default chunk size for hash calculation
@@ -35,9 +33,6 @@ const DefaultChunkLen = 512
 func NewCachePool() *CachePool {
 	return &CachePool{
 		pool: sync.Map{},
-		hash: NewHash(&HashConfig{
-			ChunkLen: DefaultChunkLen,
-		}),
 	}
 }
 

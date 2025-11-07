@@ -48,7 +48,6 @@ func NewQueryResponse(m map[uint64]int) *CacheQueryResponse {
 			IP:     ip,
 			Length: length * cache.DefaultChunkLen,
 		})
-
 	}
 	return r
 }
